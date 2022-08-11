@@ -1,11 +1,21 @@
 from collections import Counter
 import numpy as np
+from itertools import groupby
 
 
 def np_pearson_corr(x, y):
     """ Computes correlation between the rows/columns of 2 arrays.
 
-    Copied from https://cancerdatascience.org/blog/posts/pearson-correlation/
+    Copied from https://cancerdatascience.org/blog/sposts/pearson-correlation/
+
+    Args:
+        x (np.ndarray):
+        y (np.ndarray):
+
+    Returns:
+        np.ndarray: returns 2d array, where the value at (i, j) = correlation(x[i], y[j])
+
+    
     """
     xv = x - x.mean(axis=0)
     yv = y - y.mean(axis=0)
@@ -49,4 +59,20 @@ def _occurrence_list(x):
         counter[item] = counter[item] + 1
 
     return occ
+
+
+def find_runs(x):
+
+    run_values = []
+    run_lengths = []
+    groups = []
+    # groups.append(list(g))      # Store group iterator as a list
+
+    for key, group in groupby(x):
+        g = list(group)
+        groups.append(g)
+        run_values.append(key)
+        run_lengths.append(len(g))
+
+    return run_values, run_lengths
 #%%
