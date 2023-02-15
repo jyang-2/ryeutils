@@ -62,7 +62,6 @@ def _occurrence_list(x):
 
 
 def find_runs(x):
-
     run_values = []
     run_lengths = []
     groups = []
@@ -75,4 +74,51 @@ def find_runs(x):
         run_lengths.append(len(g))
 
     return run_values, run_lengths
-#%%
+
+
+def index_stimuli(stim_list, include_trial_idx=True):
+    """
+    Computes indices for list of stimuli.
+
+    Example with stim_list = 'AAABBBCCCAAABBB':
+      -       stim = AAA BBB CCC AAA BBB
+      -   stim_occ = 012 012 012 345 345
+      -    run_idx = 000 111 222 333 444
+      - idx_in_run = 012 012 012 012 012
+      -    run_occ = 000 111 222 333 444
+
+    Args:
+        stim_list (List[str]): List of stimuli
+        include_trial_idx ():
+
+    Returns:
+        dict: contains keys ['stim', 'stim_occ', 'run_idx', 'idx_in_run', 'run_occ']
+
+    """
+    stimrun, stimrun_len = find_runs(stim_list)
+    n_runs = len(stimrun)
+    stimrun_occ = occurrence(stimrun)
+
+    stim_occ = occurrence(stim_list)
+    run_idx = [i for i in range(n_runs) for j in range(stimrun_len[i])]
+    idx_in_run = [j for i in range(n_runs) for j in range(stimrun_len[i])]
+    run_occ = [x for x, y in zip(stimrun_occ, stimrun_len) for i in range(y)]
+
+    return dict(stim=stim_list,
+                stim_occ=stim_occ,
+                run_idx=run_idx,
+                idx_in_run=idx_in_run,
+                run_occ=run_occ)
+
+
+def get_run_limits(stim_list):
+    labels, runs = find_runs(stim_list)
+    end_locs = np.cumsum(runs)
+    start_locs = end_locs - np.array(runs)
+    return labels, runs, end_locs, start_locs
+
+# def get_subplot_label_locs(label_list):
+#     stim_map = index_stimuli(label_list)
+#     stim_run_list = [(x, y) for x, y in zip(stim_map['stim'], stim_map['run_idx'])]
+
+# %%
